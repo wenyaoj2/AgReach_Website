@@ -28,7 +28,7 @@
               <div class="alert alert-danger"
                    *ngIf="registerForm.get('password').dirty && registerForm.get('password').invalid">
                 <div *ngIf="registerForm.get('password').errors.required">Password is required</div>
-                <div *ngIf="registerForm.get('password').errors.minlength">Password must be at least 5 characters long
+                <div *ngIf="registerForm.get('password').errors.minlength">Password must be at least 6 characters long
                 </div>
               </div>
               <label>Confirm Password:</label>

@@ -17,7 +17,7 @@
     <div class="alert alert-danger"
          *ngIf="changingPassword && passwordForm.get('newPassword').dirty && passwordForm.get('newPassword').invalid">
       <div *ngIf="passwordForm.get('newPassword').errors.minlength">
-        Password must be at least 5 characters long.
+        Password must be at least 6 characters long.
       </div>
     </div>
     <label>Confirm Password</label>
