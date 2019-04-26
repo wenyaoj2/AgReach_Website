@@ -1,0 +1,70 @@
+<h4>Group Details</h4>
+<br/>
+<div class="row">
+  <div class="col">
+    <div class="row">
+      <div class="col">
+        <dt>Group Name</dt>
+        <dd>{{group?.groupName}}</dd>
+      </div>
+
+      <div class="col">
+        <dt>Originating Project</dt>
+        <dd>{{group?.originatingProject}}</dd>
+      </div>
+
+      <div class="col">
+        <dt>Current Project</dt>
+        <dd>{{group?.currentProject}}</dd>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <dt>Formation Date</dt>
+        <dd>{{group?.formationDate}}</dd>
+      </div>
+
+      <div class="col">
+        <dt>District</dt>
+        <dd>{{group?.district}}</dd>
+      </div>
+      <div class="col">
+        <dt>Village</dt>
+        <dd>{{group?.village}}</dd>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <dt>Members</dt>
+        <dd>
+          <ul *ngIf="hasMembers">
+            <li *ngFor="let member of memberList">
+              <a [routerLink]="['/view-farmer/' + member.guid]">{{member.contactName}}</a>
+            </li>
+          </ul>
+          <span *ngIf="!hasMembers">This group has no members assigned</span>
+        </dd>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col">
+        <dt>Group Added By</dt>
+        <dd>{{extWorkerName + ' (' + extWorkerEmail + ')'}}</dd>
+      </div>
+    </div>
+    <br/>
+    <div class="row mb-2">
+      <div class="col">
+        <dt>Group Village Location</dt>
+        <ngui-map #groupMap zoom="12" mapTypeId="satellite" [streetViewControl]="false" [center]="mapCenter">
+          <marker [position]="mapCenter"></marker>
+        </ngui-map>
+      </div>
+    </div>
+
+  </div>
+</div>

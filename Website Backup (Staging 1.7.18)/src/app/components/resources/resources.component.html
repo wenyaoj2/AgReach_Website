@@ -1,0 +1,71 @@
+<h3 class="page-header">Resources</h3>
+<form (submit)="upload()" class="mb-3">
+  <table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+      <th>File Name</th>
+      <th>Description</th>
+      <th>Resource Type</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of resourceList">
+      <td>{{item.fileName}}</td>
+      <td>{{item.description}}</td>
+      <td>{{item.resourceType}}</td>
+      <td>
+        <a class="btn btn-sm btn-success mb-1" target="_blank" href="{{item.downloadUrl}}">
+          <i class="fa fa-external-link" aria-hidden="true"></i> View
+        </a>
+        <br/>
+        <button class="btn btn-sm btn-danger" *ngIf="isAdmin" data-toggle="modal" data-target="#myModal"
+                (click)="deleteClick($event, item)"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+        </button>
+      </td>
+    </tr>
+    </tbody>
+    <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Delete Resource</h4>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure? If you delete this resource, AgReach App users will no longer be able to download and share
+              it.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="deleteResource($event)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+            </button>
+            <button type="button" class="btn" data-dismiss="modal" (click)="cancelDelete($event)">Cancel</button>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </table>
+  <h4>Upload New Resource</h4>
+  <div *ngIf="progress" class="m-3">
+    <div class="progress">
+      <div class="progress-bar progress-bar-animated" [ngStyle]="{ 'width': this.progress + '%' }"></div>
+    </div>
+    Uploading: {{this.progress.toFixed(1)}}% Complete
+  </div>
+  <div class="form-group">
+    <input id="documentSelector" type="file" [(ngModel)]="uploaddocument" name="documentSelector"
+           (change)="fileSelected($event)">
+  </div>
+  <div class="form-group">
+    <label>Description: </label>
+    <input class="form-control" placeholder="Description" type="text" [(ngModel)]="description" name="description">
+  </div>
+  <div class="form-group">
+    <label>File Type: </label>
+    <input class="form-control" placeholder="Video, Presentation, etc." type="text" [(ngModel)]="resourceType"
+           name="resourceType">
+  </div>
+  <button type="submit" class="btn btn-success"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Upload</button>
+</form>

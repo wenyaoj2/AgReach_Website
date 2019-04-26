@@ -1,0 +1,70 @@
+<h4 class="page-header">Farmer Information</h4>
+<div class="alert alert-info display-block" role="alert">
+  <h4 class="alert-heading">Farmer Stats</h4>
+  <div>
+    There are currently {{farmerList.length}} unique farmer(s) registered within the AgReach Extension Helper app. <br/>
+    These {{farmerList.length}} farmer(s) are registered under {{extensionWorkerCount}} Extension Worker(s). <br/>
+    <div class="chart-box">
+      <ngx-charts-bar-vertical
+        [view]="view"
+        [scheme]="colorScheme"
+        [results]="districtResults"
+        [gradient]="gradient"
+        [xAxis]="showXAxis"
+        [yAxis]="showYAxis"
+        [legend]="showLegend"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel">
+      </ngx-charts-bar-vertical>
+    </div>
+    <br/>
+  </div>
+</div>
+<br/>
+<table class="table table-responsive table-bordered">
+  <thead>
+  <tr>
+    <th (click)="sort('contactName')">Name <i class="fa"
+                                              [ngClass]="{'fa-sort': sortType != 'contactName',
+                        'fa-sort-asc': (sortType == 'contactName' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'contactName' && sortDesc) }"
+                                              aria-hidden="true"></i></th>
+    <th (click)="sort('district')">District <i class="fa"
+                                               [ngClass]="{'fa-sort': sortType != 'district',
+                        'fa-sort-asc': (sortType == 'district' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'district' && sortDesc) }"
+                                               aria-hidden="true"></i></th>
+    <th (click)="sort('village')">Village <i class="fa"
+                                             [ngClass]="{'fa-sort': sortType != 'village',
+                        'fa-sort-asc': (sortType == 'village' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'village' && sortDesc) }"
+                                             aria-hidden="true"></i></th>
+    <th (click)="sort('extensionWorker')">Extension Worker <i class="fa"
+                                                              [ngClass]="{'fa-sort': sortType != 'extensionWorker',
+                        'fa-sort-asc': (sortType == 'extensionWorker' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'extensionWorker' && sortDesc) }"
+                                                              aria-hidden="true"></i></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let farmer of farmerList">
+    <td>
+      <a [routerLink]="['/view-farmer/' + farmer.guid]">
+        {{farmer.contactName}}
+      </a>
+    </td>
+    <td>{{farmer.district}}</td>
+    <td>{{farmer.village}}</td>
+    <td>
+      <a [routerLink]="['/gps-location/' + farmer.extensionWorker?.$key + '/' + farmer.extensionWorker?.email]">
+        {{farmer.extensionWorker?.fullName || farmer.extensionWorker?.email}}
+      </a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<script src="../../../../node_modules/chart.js/dist/Chart.bundle.js"></script>
+<script src="../../../../node_modules/angular-chart.js/dist/angular-chart.min.js"></script>

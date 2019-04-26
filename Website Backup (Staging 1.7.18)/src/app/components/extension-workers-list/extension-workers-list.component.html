@@ -1,0 +1,6 @@
+<h4 class="page-header">Extension Workers List</h4>
+<ul class="list-group">
+  <li class="list-group-item" *ngFor="let viewExtensionList of viewExtensionWorkerList">
+    <!-- <a [routerLink] = "['/view-meeting-details/'+ viewExtensionList.$key]">{{viewExtensionList.email}}</a> -->
+    <a [routerLink]="['/gps-location/'+ viewExtensionList.$key + '/' + viewExtensionList.email]">{{viewExtensionList.email}}</a>
+</ul>

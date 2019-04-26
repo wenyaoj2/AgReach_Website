@@ -1,0 +1,90 @@
+<a [routerLink] = "['/extensionworkerlist']">Go Back</a>
+<br>
+<h3 class="page-header">Edit User</h3>
+<form (submit)="editUser()">
+	<!-- <div class="form-group">
+	<label>Name: </label>
+	<input class="form-control" type="text" [(ngModel)]="name" name="name">
+	</div>
+	
+	<div class="form-group">
+	<label>Age: </label>
+	<input class="form-control" type="text" [(ngModel)]="age" name="age">
+	</div>
+	
+	<div class="form-group">
+	<label>Gender: </label>
+	<select class="form-control" type="text" [(ngModel)]="gender" name="gender">
+		<option value="Male">Male</option>
+		<option value="Female">Female</option>
+	</select>
+	</div>
+	
+	<div class="form-group">
+	<label>Email: </label>
+	<input class="form-control" type="text" [(ngModel)]="email" name="email" required>
+	</div>
+	
+	<div class="form-group">
+	<label>Memberships: </label>
+	<input class="form-control" type="text" [(ngModel)]="memberships" name="memberships">
+	</div>
+	
+	<div class="form-group">
+	<label>Education Level: </label>
+	<input class="form-control" type="text" [(ngModel)]="educationlevel" name="educationlevel">
+	</div>
+	
+	<div class="form-group">
+	<label>District: </label>
+	<input class="form-control" type="text" [(ngModel)]="district" name="disctrict">
+	</div>
+	
+	<div class="form-group">
+	<label>Village Name: </label>
+	<input class="form-control" type="text" [(ngModel)]="villagename" name="villagename">
+	</div>
+	
+	<div class="form-group">
+	<label>Upload Document: </label>
+	<input type="file" [(ngModel)]="uploaddocument" name="uploaddocument" required>
+	</div>
+	
+ -->	
+	<table class="table table-bordered">
+  <tbody>
+    <tr>
+      <th scope="row">Name</th>
+      <td colspan="2"><input class="form-control" type="text" [(ngModel)]="name" name="name"></td>
+    </tr>
+    <tr>
+      <th scope="row">Age</th>
+      <td colspan="2"><input class="form-control" type="text" [(ngModel)]="age" name="age"></td>
+    </tr>
+    <tr>
+      <th scope="row">Gender</th>
+      <td colspan="2"><select class="form-control" type="text" [(ngModel)]="gender" name="gender">
+		<option value="Male">Male</option>
+		<option value="Female">Female</option>
+	</select></td>
+    </tr>
+    <tr>
+      <th scope="row">Memberships</th>
+      <td colspan="2"><input class="form-control" type="text" [(ngModel)]="memberships" name="memberships"></td>
+    </tr>
+    <tr>
+      <th scope="row">Education Level</th>
+      <td colspan="2"><input class="form-control" type="text" [(ngModel)]="educationlevel" name="educationlevel"></td>
+    </tr>
+    <tr>
+      <th scope="row">District</th>
+      <td colspan="2"><input class="form-control" type="text" [(ngModel)]="district" name="disctrict"></td>
+    </tr>
+    <tr>
+      <th scope="row">Village Name</th>
+      <td colspan="2"><input class="form-control" type="text" [(ngModel)]="villagename" name="villagename"></td>
+    </tr>
+  </tbody>
+</table>
+<input type="submit" value="Submit" class="btn btn-success">
+</form>

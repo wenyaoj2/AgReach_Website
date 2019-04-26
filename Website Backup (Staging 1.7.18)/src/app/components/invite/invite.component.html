@@ -1,0 +1,36 @@
+<h4>Send an Invitation</h4>
+<div>
+  <p>
+    For data security purposes, access to the AgReach Management Portal is by invitation only. To invite a colleague to
+    use
+    this system, please enter their email address below. We will then send an invitation code,
+    which can be used to register a new Management Portal account. You can also provide details about the user, which
+    will assist in creating their account.
+  </p>
+  <form [formGroup]="inviteForm">
+    <div>
+      <label>Email Address</label>
+      <input class="form-control" type="email" formControlName="email">
+      <div class="alert alert-danger" *ngIf="inviteForm.get('email').invalid && inviteForm.get('email').dirty">
+        <div *ngIf="inviteForm.get('email').errors.required">An email address is required</div>
+        <div *ngIf="inviteForm.get('email').errors.pattern">Please enter a valid email address</div>
+      </div>
+    </div>
+    <div>
+      <label>Role</label>
+      <select class="form-control" formControlName="role">
+        <option>Admin</option>
+        <option>Manager</option>
+        <option>Stakeholder</option>
+      </select>
+    </div>
+    <div *ngIf="inviteForm.get('role').value === 'Manager'">
+      <app-area-picker (update)="areaSelected($event)"></app-area-picker>
+    </div>
+    <br/>
+    <button class="btn btn-success" [disabled]="inviteForm.invalid" (click)="sendInvitation()">
+      <i class="fa fa-paper-plane" aria-hidden="true"></i> Send Invitation
+    </button>
+  </form>
+
+</div>

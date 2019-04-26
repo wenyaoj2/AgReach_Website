@@ -1,0 +1,174 @@
+<div *ngIf="userList">
+  <!--<a [routerLink]="['/extensionworkerlist']">Go Back</a>-->
+  <br>
+  <h2 class="page-header"><i class="icon-user"></i> Manage Users</h2>
+  <br/>
+  <div *ngIf="isAdmin || (role === 'Admin')">
+    <h4>Management Portal Users</h4>
+    <a [routerLink]="['/invite']" role="button" class="btn btn-primary mb-3">
+      <i class="fa fa-user-plus" aria-hidden="true"></i> Invite New User
+    </a>
+    <table class="table table-striped table-bordered table-sm">
+      <thead>
+      <tr>
+        <th class="pointer" (click)="sortManagementUsers('email')">
+          Email <i class="fa"
+                   [ngClass]="{'fa-sort': sortType != 'email',
+                        'fa-sort-asc': (sortType == 'email' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'email' && sortDesc) }"
+                   aria-hidden="true"> </i>
+        </th>
+        <th class="pointer" (click)="sortManagementUsers('fullName')">
+          Name <i class="fa"
+                  [ngClass]="{'fa-sort': sortType != 'fullName',
+                        'fa-sort-asc': (sortType == 'fullName' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'fullName' && sortDesc) }"
+                  aria-hidden="true"> </i>
+        </th>
+        <th class="pointer" (click)="sortManagementUsers('role')">
+          Role <i class="fa"
+                  [ngClass]="{'fa-sort': sortType != 'role',
+                        'fa-sort-asc': (sortType == 'role' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'role' && sortDesc) }"
+                  aria-hidden="true"> </i>
+        </th>
+        <th class="pointer" (click)="sortManagementUsers('district')">
+          Area / District <i class="fa"
+                             [ngClass]="{'fa-sort': sortType != 'district',
+                        'fa-sort-asc': (sortType == 'district' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'district' && sortDesc) }"
+                             aria-hidden="true"> </i>
+        </th>
+        <th>Admin Privileges</th>
+        <th class="pointer" (click)="sortManagementUsers('status')">
+          Status <i class="fa"
+                    [ngClass]="{'fa-sort': sortType != 'status',
+                        'fa-sort-asc': (sortType == 'status' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'status' && sortDesc) }"
+                    aria-hidden="true"> </i>
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of websiteUsers; let row_no = index">
+        <td>{{item.email}}</td>
+        <td>
+          <input [disabled]="item.status === 'Pending' || item.status === 'Disapproved'" class="form-control-sm"
+                 [(ngModel)]="item.fullName" (change)="nameChanged($event, item)">
+        </td>
+        <td>
+          <select [disabled]="item.status === 'Pending' || item.status === 'Disapproved'" [(ngModel)]="item.role"
+                  class="form-control-sm" (input)="roleInput($event, item)">
+            <option *ngFor="let s of roleArray" [ngValue]="s">{{s}}</option>
+          </select>
+        </td>
+        <td>
+          <!-- Managers are assigned to a district and area, the same as extension workers.
+          Show the district/area picker if the user is a manager -->
+          <div *ngIf="item.role === 'Manager'">
+            <app-area-picker [disabled]="item.status === 'Pending' || item.status === 'Disapproved'"
+                             [previousArea]="item.area" [previousDistrict]="item.district"
+                             (update)="areaComponentSelected($event, item)"></app-area-picker>
+          </div>
+        </td>
+        <td>
+          <label for="adminCheckbox">
+            <input id="adminCheckbox" type="checkbox"
+                   [disabled]="!isAdmin || item.status === 'Pending' || item.status === 'Disapproved'"
+                   [checked]="item.isAdmin"
+                   (change)="adminInput($event, item)">
+            User is an Admin
+          </label>
+        </td>
+        <td>
+          <select [(ngModel)]="item.status" class="form-control-sm" (input)="statusInput($event, item)">
+            <option *ngFor="let s of statusArray" [ngValue]="s">{{s}}</option>
+          </select>
+          <i *ngIf="item.status === 'Pending'" class="fa text-danger fa-exclamation-triangle" aria-hidden="true"></i>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Extension Helper App Users</h4>
+  <table class="table table-striped table-bordered table-sm">
+    <thead>
+    <tr>
+      <th class="pointer" (click)="sortAppUsers('email')">
+        Email <i class="fa"
+                 [ngClass]="{'fa-sort': sortTypeApp != 'email',
+                        'fa-sort-asc': (sortTypeApp == 'email' && !sortDescApp),
+                        'fa-sort-desc': (sortTypeApp == 'email' && sortDescApp) }"
+                 aria-hidden="true"> </i>
+      </th>
+      <th class="pointer" (click)="sortAppUsers('fullName')">
+        Name <i class="fa"
+                [ngClass]="{'fa-sort': sortTypeApp != 'fullName',
+                        'fa-sort-asc': (sortTypeApp == 'fullName' && !sortDescApp),
+                        'fa-sort-desc': (sortTypeApp == 'fullName' && sortDescApp) }"
+                aria-hidden="true"> </i>
+      </th>
+      <!--<th>Role</th>-->
+      <th class="pointer" (click)="sortAppUsers('district')">
+        Area / District <i class="fa"
+                           [ngClass]="{'fa-sort': sortTypeApp != 'district',
+                        'fa-sort-asc': (sortTypeApp == 'district' && !sortDescApp),
+                        'fa-sort-desc': (sortTypeApp == 'district' && sortDescApp) }"
+                           aria-hidden="true"> </i></th>
+      <th>Assigned Section</th>
+      <th class="pointer" (click)="sortAppUsers('status')">
+        Status <i class="fa"
+                  [ngClass]="{'fa-sort': sortTypeApp != 'status',
+                        'fa-sort-asc': (sortTypeApp == 'status' && !sortDescApp),
+                        'fa-sort-desc': (sortTypeApp == 'status' && sortDescApp) }"
+                  aria-hidden="true"> </i>
+      </th>
+      <th class="pointer" (click)="sortAppUsers('manager')">
+        Manager <i class="fa"
+                   [ngClass]="{'fa-sort': sortTypeApp != 'manager',
+                        'fa-sort-asc': (sortTypeApp == 'manager' && !sortDescApp),
+                        'fa-sort-desc': (sortTypeApp == 'manager' && sortDescApp) }"
+                   aria-hidden="true"> </i>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of appUsers; let rowNum = index">
+      <td>
+        <a [routerLink]="['/gps-location/' + item.$key + '/' + item.email]">{{item.email}}</a>
+      </td>
+      <td>
+        <input [disabled]="item.status === 'Pending' || item.status === 'Disapproved'" class="form-control-sm"
+               [(ngModel)]="item.fullName" (change)="nameChanged($event, item)">
+      </td>
+      <!--<td>
+        <input disabled="true" [(ngModel)]="item.role" class="form-control-sm">
+      </td>-->
+      <td>
+        <app-area-picker [disabled]="item.status === 'Pending' || item.status === 'Disapproved'"
+                         [previousArea]="item.area"
+                         [previousDistrict]="item.district"
+                         (update)="areaComponentSelected($event, item)"></app-area-picker>
+      </td>
+      <td>
+        <input [disabled]="item.status === 'Pending' || item.status === 'Disapproved'" [(ngModel)]="item.section"
+               class="form-control-sm" (change)="sectionInput($event, item)">
+      </td>
+      <td>
+        <select [disabled]="(!isAdmin && role !== 'Admin')" [(ngModel)]="item.status"
+                class="form-control-sm" (input)="statusInput($event, item)">
+          <option *ngFor="let s of statusArray" [ngValue]="s">{{s}}</option>
+        </select>
+        <i *ngIf="item.status === 'Pending'" class="fa text-danger fa-exclamation-triangle" aria-hidden="true"></i>
+      </td>
+      <td>
+        <select [disabled]="item.status === 'Pending' || item.status === 'Disapproved'" [(ngModel)]="item.manager"
+                class="form-control-sm" (input)="managerInput($event, item)">
+          <option *ngFor="let m of managerList" [value]="m.email">{{m.fullName}}</option>
+        </select>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

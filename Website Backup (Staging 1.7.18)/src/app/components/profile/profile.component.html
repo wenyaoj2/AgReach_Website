@@ -1,0 +1,47 @@
+<h4 class="page-header">Your Profile</h4>
+
+<div class="row">
+  <label>Your Name</label>
+  <input class="form-control" [(ngModel)]="fullName" (change)="nameChange()">
+</div>
+
+<br/>
+<h4>Change Password</h4>
+
+<form [formGroup]="passwordForm" novalidate>
+  <div class="form-group">
+    <label>Current Password</label>
+    <input type="password" class="form-control" formControlName="currentPassword" (input)="passwordUpdated()">
+    <label>New Password</label>
+    <input type="password" class="form-control" formControlName="newPassword" (input)="passwordUpdated()">
+    <div class="alert alert-danger"
+         *ngIf="changingPassword && passwordForm.get('newPassword').dirty && passwordForm.get('newPassword').invalid">
+      <div *ngIf="passwordForm.get('newPassword').errors.minlength">
+        Password must be at least 5 characters long.
+      </div>
+    </div>
+    <label>Confirm Password</label>
+    <input type="password" class="form-control" formControlName="confirmPassword" (input)="confirmPassword()">
+    <div *ngIf="passwordMismatch" class="alert alert-danger">
+      Passwords don't match
+    </div>
+  </div>
+
+  <button [disabled]="passwordForm.invalid" class="btn btn-success" type="submit" (click)="changePassword()">Change
+    Password
+  </button>
+</form>
+
+<div class="row">
+  <!--<div>
+    <input class="form-control" placeholder="Current Password" type="password" id="currentPassword">
+    <input class="form-control" minlength="5" placeholder="New Password" type="password" id="newPassword"
+           name="newPassword">
+    <input class="form-control" minlength="5" placeholder="Confirm Password" type="password" id="confirmPassword">
+    <br/>
+    <div *ngIf="newPassword.invalid && (newPassword.dirty || newPassword.touched)" class="alert alert-danger">
+      <div *ngIf="newPassword.errors.minlength">Your new password must be at least 5 characters long.</div>
+    </div>
+    <button class="btn btn-primary" (click)="changePassword()">Change Password</button>
+  </div>-->
+</div>

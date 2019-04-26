@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="row">
+    <div class="">
+      <div class="panel panel-default">
+        <div class="panel-heading text-center">
+          <h3 class="panel-title">Welcome to AgReach</h3>
+        </div>
+        <div style="padding-bottom: 10px;">
+          <img src="../../../assets/logo-small.png"/>
+          <br/>
+        </div>
+        <div class="panel-body">
+          <!--<form (submit)="login()" role="form">
+            <fieldset>-->
+          <div class="form-group">
+            <input class="form-control" placeholder="E-mail" [(ngModel)]="email" name="email" type="email"
+                   autofocus>
+          </div>
+          <div class="form-group">
+            <input class="form-control" placeholder="Password" [(ngModel)]="password" name="password"
+                   type="password" value="">
+          </div>
+          <button (click)="login()" type="submit" (keyup.enter)="login()" class="btn btn-success btn-block">Login</button>
+          <!--  </fieldset>
+          </form>-->
+          <small>Forgot your password? <a [routerLink]="['/resetPassword']">Click here</a> to reset it.</small><br/>
+          <small>Receive an invitation?  <a [routerLink]="['/register']">Click here</a> to register.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

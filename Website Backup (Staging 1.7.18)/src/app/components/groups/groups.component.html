@@ -1,0 +1,45 @@
+<h4>Groups</h4>
+<div>
+  <table class="table table-responsive table-striped">
+    <thead class="thead-light">
+    <tr>
+      <th (click)="sort('groupName')">Group Name <i class="fa"
+                        [ngClass]="{'fa-sort': sortType != 'groupName',
+                        'fa-sort-asc': (sortType == 'groupName' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'groupName' && sortDesc) }"
+                        aria-hidden="true"></i></th>
+      <th (click)="sort('currentProject')">Current Project <i class="fa"
+                             [ngClass]="{'fa-sort': sortType != 'currentProject',
+                        'fa-sort-asc': (sortType == 'currentProject' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'currentProject' && sortDesc) }"
+                             aria-hidden="true"></i></th>
+      <th (click)="sort('district')">District <i class="fa"
+                      [ngClass]="{'fa-sort': sortType != 'district',
+                        'fa-sort-asc': (sortType == 'district' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'district' && sortDesc) }"
+                      aria-hidden="true"></i></th>
+      <th (click)="sort('village')">Village <i class="fa"
+                     [ngClass]="{'fa-sort': sortType != 'village',
+                        'fa-sort-asc': (sortType == 'village' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'village' && sortDesc) }"
+                     aria-hidden="true"></i></th>
+      <th (click)="sort('extensionWorker')">Extension Worker <i class="fa"
+                              [ngClass]="{'fa-sort': sortType != 'extensionWorker',
+                        'fa-sort-asc': (sortType == 'extensionWorker' && !sortDesc),
+                        'fa-sort-desc': (sortType == 'extensionWorker' && sortDesc) }"
+                              aria-hidden="true"></i></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let group of groupList">
+      <td><a [routerLink]="['/group/' + group.guid]">{{group.groupName}}</a></td>
+      <td>{{group.currentProject}}</td>
+      <td>{{group.district}}</td>
+      <td>{{group.village}}</td>
+      <td><a [routerLink]="['/gps-location/' + group.extensionWorkerKey + '/' + group.extensionWorkerEmail]">
+        {{group.extensionWorkerName || group.extensionWorkerEmail}}
+      </a></td>
+    </tr>
+    </tbody>
+  </table>
+</div>

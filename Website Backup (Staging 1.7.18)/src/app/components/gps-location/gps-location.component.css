@@ -1,0 +1,50 @@
+.goal {
+  width: 75px;
+}
+
+.chart {
+  height: 200px;
+}
+
+ngui-map {
+  min-height: 150px;
+  padding: 16px;
+  max-width: 670px;
+  /** max-width isn't really needed during normal browsing, but will ensure consistency between the map seen on the monitor
+  and the map that is ultimately printed (which needs to have a max-width to make sure it's not cut off) */
+}
+
+.no-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/** Ensure that the dashboard reports looks good when printing */
+@media print {
+  ngui-map {
+    /** Make sure that the maps aren't too wide for portrait mode and that the background images are printed */
+    max-width: 670px;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .progress {
+    /** Make sure that the background images for progress bars are printed */
+    -webkit-print-color-adjust: exact;
+  }
+
+  /** Prevent page breaks inside of maps */
+  .no-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /** Hide the header logo */
+  .jumbotron {
+    display: none;
+  }
+
+  /** Hide the print button */
+  .print-button {
+    display: none;
+  }
+}

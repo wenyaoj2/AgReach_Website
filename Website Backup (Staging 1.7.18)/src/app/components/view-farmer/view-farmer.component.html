@@ -1,0 +1,364 @@
+<h4 class="page-header">Farmer Information: {{farmerName}}</h4>
+
+<div id="accordion" role="tablist">
+  <div class="card">
+    <div class="card-header" role="tab" id="headingOne">
+      <h5 class="mb-0">
+        <a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Farmer Stats
+        </a>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <div class="alert alert-info" role="alert">
+          <h4 class="alert-heading">Farmer Stats</h4>
+          <p>
+            There are <a data-toggle="collapse" href="#collapseFour">{{indVisits.length}} Individual Farm Visit(s)</a>
+            with this farmer.<br/>
+            This farmer has participated in <a data-toggle="collapse" href="#collapseFive">{{groupVisits.length}} Group
+            Farm Visits</a>.<br/>
+            This farmer has attended <a data-toggle="collapse" href="#collapseSix">{{platforms.length}} Stakeholder
+            Platforms</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" role="tab" id="headingTwo">
+      <h5 class="mb-0">
+        <a class="collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false"
+           aria-controls="collapseTwo">
+          Demographic Information
+        </a>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+        <div *ngIf="indVisits.length ==0">There is no demographic information for this farmer yet, since he or she has
+          not participated in any individual farm visits. You should encourage an extension worker to visit this farmer
+          and collect demographic information.
+        </div>
+        <div *ngIf="indVisits.length > 0" class="container form-group">
+          <div class="row">
+            <div class="col-sm">
+              <label for="nameInput">Name:</label>
+              <input class="form-control" id="nameInput" [ngModel]="farmerDemographics.name" readonly>
+            </div>
+            <div class="col-sm">
+              <label for="ageInput">Age:</label>
+              <input class="form-control" [ngModel]="farmerDemographics.age" id="ageInput" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm">
+              <label for="educationLevelInput">Education Level:</label>
+              <input class="form-control" id="educationLevelInput" [ngModel]="farmerDemographics.educationLevel"
+                     readonly>
+            </div>
+            <div class="col-sm">
+              <label for="genderInput">Gender:</label>
+              <input class="form-control" id="genderInput" [ngModel]="farmerDemographics.gender" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm">
+              <label for="villageInput">Village:</label>
+              <input class="form-control" id="villageInput" [ngModel]="farmerDemographics.villageName" readonly>
+            </div>
+            <div class="col-sm">
+              <label for="districtInput">District:</label>
+              <input class="form-control" id="districtInput" [ngModel]="farmerDemographics.district" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" role="tab" id="headingThree">
+      <h5 class="mb-0">
+        <a class="collapsed" data-toggle="collapse" (click)="farmMapResize()" href="#collapseThree"
+           aria-expanded="false" aria-controls="collapseThree">
+          Farm Information
+        </a>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree"
+         data-parent="#accordion">
+      <div class="card-body">
+        <div *ngIf="farmInformation">
+          <h3>Farm Location</h3>
+          <div *ngIf="hasLocation">
+            <span *ngIf="!mapReady">Map is loading...</span>
+            <ngui-map (idle)="mapLoaded()" #farmMap [center]="mapCenter" [streetViewControl]="false" [zoom]="16">
+              <polygon [paths]="farmCorners"></polygon>
+            </ngui-map>
+            <span
+              class="info">Farm location and information as of {{this.farmLocationDate | date:'dd MMM yyyy h:mm a'}}</span>
+          </div>
+          <div *ngIf="!hasLocation">
+            <span>Farm location isn't available for this farmer.  You should encourage an Extension Worker to visit
+            this farmer and collect information about his or her farm.</span>
+          </div>
+          <br/>
+          <h3>Farm Information</h3>
+          <div class="row">
+            <div class="col-sm">
+              <label for="topographyInput">Farm Topography:</label>
+              <select class="form-control" id="topographyInput" [disabled]="!canEdit" [ngModel]="topography">
+                <option>Flat</option>
+                <option>Mild Slope</option>
+                <option>Moderate Slope</option>
+                <option>Extreme Slope</option>
+                <option>Mixed</option>
+              </select>
+            </div>
+            <div class="col-sm">
+              <label for="landCoverInput">Land Cover:</label>
+              <select #landCoverInput multiple="multiple" class="form-control" id="landCoverInput"
+                      [disabled]="!canEdit" [ngModel]="landCover" (change)="changeLandCover($event.target.options)">
+                <option *ngFor="let item of landCoverOptions" [value]="item">{{item}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm">
+              <label for="conditionInput">Conditions Affecting Yields:</label>
+              <select class="form-control" id="conditionInput" [disabled]="!canEdit" [ngModel]="conditions">
+                <option>Drought</option>
+                <option>Flooding</option>
+                <option>Pests</option>
+                <option>Theft</option>
+              </select>
+            </div>
+            <div class="col-sm">
+              <label for="financeInput">Farmer's Finances This Year:</label>
+              <select class="form-control" [ngModel]="finances" id="financeInput" [disabled]="!canEdit">
+                <option>Not Collected</option>
+                <option>Better than last year</option>
+                <option>The same as last year</option>
+                <option>Worse than last year</option>
+              </select>
+            </div>
+          </div>
+          <br/>
+          <div class="row" *ngFor="let y of yieldArray">
+            <div class="col-sm">
+              <label>Crop:</label>
+              <input class="form-control" readonly [ngModel]="y.name">
+            </div>
+            <div class="col-sm">
+              <label>Yield (kg/ha):</label>
+              <input class="form-control" type="number" [disabled]="!canEdit" [ngModel]="y.cropYield">
+            </div>
+          </div>
+          <br/>
+          <div *ngIf="poultry !== ''">
+            <label>Poultry:</label>
+            <input class="form-control" [disabled]="!canEdit" [ngModel]="poultry">
+          </div>
+          <div *ngIf="smallRuminants !== ''">
+            <label>Small Ruminants:</label>
+            <input class="form-control" [disabled]="!canEdit" [ngModel]="smallRuminants">
+          </div>
+          <div *ngIf="largeRuminants !== ''">
+            <label>Large Ruminants:</label>
+            <input class="form-control" [disabled]="!canEdit" [ngModel]="largeRuminants">
+          </div>
+          <div *ngIf="aquaculture !== ''">
+            <label>Aquaculture:</label>
+            <input class="form-control" [disabled]="!canEdit" [ngModel]="aquaculture">
+          </div>
+        </div>
+        <div *ngIf="!farmInformation">
+          <p>No farm information has been collected from this farmer yet. You should encourage an extension worker to
+            engage with this individual and collect farm-related information.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" role="tab" id="headingFour">
+      <h5 class="mb-0">
+        <a class="collapsed" data-toggle="collapse" href="#collapseFour" aria-expanded="false"
+           aria-controls="collapseFour">
+          Individual Farm Visits
+        </a>
+      </h5>
+    </div>
+    <div id="collapseFour" class="collapse" role="tabpanel" aria-labelledby="headingFour" data-parent="#accordion">
+      <div class="card-body">
+        <div *ngIf="indVisits.length == 0">This farmer has not participated in any individual farm visits.</div>
+        <div *ngIf="indVisits.length > 0">
+          <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+              <th>Visit Date</th>
+              <th>Duration (mins)</th>
+              <th>Visit Focus</th>
+              <th>Extension Worker</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let v of indVisits">
+              <td>{{v.visitInformation.visitDate | date:'dd MMM yyyy h:mm a'}}</td>
+              <td>{{v.visitInformation.visitDuration}}</td>
+              <td>
+                <ul>
+                  <li *ngFor="let t of topicArray">{{t}}</li>
+                </ul>
+              </td>
+              <td>{{v.email}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" role="tab" id="headingFive">
+      <h5 class="mb-0">
+        <a class="collapsed" data-toggle="collapse" href="#collapseFive" aria-expanded="false"
+           aria-controls="collapseFive">
+          Group Farm Visits
+        </a>
+      </h5>
+    </div>
+    <div id="collapseFive" class="collapse" role="tabpanel" aria-labelledby="headingFive" data-parent="#accordion">
+      <div class="card-body">
+        <div *ngIf="groupVisits.length == 0">This farmer has not participated in any group farm visits.</div>
+        <div *ngIf="groupVisits.length > 0">
+          <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+              <th>Visit Date</th>
+              <th>Duration (mins)</th>
+              <th>Visit Focus</th>
+              <th>Group</th>
+              <th>Attendees</th>
+              <th>Extension Worker</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let g of groupVisits">
+              <td>{{g.visitInformation.visitDate | date:'dd MMM yyyy h:mm a'}}</td>
+              <td>{{g.visitInformation.visitDuration}}</td>
+              <td>
+                <ul>
+                  <li *ngFor="let f of g.visitInformation.visitFocus">{{f}}</li>
+                </ul>
+              </td>
+              <td>{{g.groupDetails.groupName}}</td>
+              <td>
+                <ul>
+                  <li *ngFor="let a of g.attendees">{{a.role + ': ' + a.name}}</li>
+                </ul>
+              </td>
+              <td>{{g.email}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" role="tab" id="headingSix">
+      <h5 class="mb-0">
+        <a class="collapsed" data-toggle="collapse" href="#collapseSix" aria-expanded="false"
+           aria-controls="collapseSix">
+          Stakeholder Platforms
+        </a>
+      </h5>
+    </div>
+    <div id="collapseSix" class="collapse" role="tabpanel" aria-labelledby="headingSix" data-parent="#accordion">
+      <div class="card-body">
+        <div *ngIf="platforms.length == 0">This farmer has not participated in any stakeholder platforms.</div>
+        <div *ngIf="platforms.length > 0">
+          <table class="table table-striped table-bordered">
+            <thead>
+            <th>Platform Date</th>
+            <th>Duration (hours)</th>
+            <th>Topic</th>
+            <th>Attendees</th>
+            <th>SOP Checklist</th>
+            </thead>
+            <tbody>
+            <tr *ngFor="let p of platforms">
+              <td>{{p.meetingDate | date:'dd MMM yyyy h:mm a'}}</td>
+              <td>{{p.duration}}</td>
+              <td>{{p.topic}}</td>
+              <td>
+                <ul>
+                  <li *ngFor="let a of p.attendeeRoles">
+                    {{a.role + ': ' + a.name}}
+                  </li>
+                </ul>
+              </td>
+              <td>
+                <button *ngIf="p.sopChecklist" class="btn btn-primary" type="button" data-toggle="modal"
+                        [attr.data-target]="'#' + getId(p)">View SOP
+                </button>
+                <span *ngIf="!p.sopChecklist">SOP Checklist was not completed.</span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          <div *ngFor="let p of platforms" class="modal fade" [id]="getId(p)" tabindex="-1"
+               role="dialog" aria-hidden="true">
+            <div *ngIf="p.sopChecklist" class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">SOP Checklist</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col">
+                      <div class="row" *ngFor="let cats of p.sopChecklist">
+                        <div class="col">
+                          <div *ngIf="cats.category">
+                            <h3>SOP Category: {{cats.category}}</h3>
+                          </div>
+                          <div *ngIf="cats.subcategory">
+                            <h5>Subcategory: {{cats.subcategory}}</h5>
+                            <table class="table table-striped table-bordered">
+                              <thead>
+                              <th>Responsible Person</th>
+                              <th>Task</th>
+                              <th>Complete</th>
+                              </thead>
+                              <tbody>
+                              <tr *ngFor="let task of cats.tasks">
+                                <td>{{task.person}}</td>
+                                <td>{{task.task}}</td>
+                                <td>{{task.complete}}</td>
+                              </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

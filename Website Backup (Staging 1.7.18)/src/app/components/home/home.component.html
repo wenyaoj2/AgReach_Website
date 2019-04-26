@@ -1,0 +1,843 @@
+<div class="jumbotron text-center" #jumbotron>
+  <div class="container">
+    <img src="../../../assets/footer_logo.png" height="152">
+  </div>
+</div>
+<div id="accordion" role="tablist">
+  <div class="card">
+    <div class="card-header" role="tab" id="headingOne">
+      <h5 class="mb-0"><i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp;
+        <a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          National Overview
+        </a>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="row">
+        <div class="col float-right">
+          <button class="btn btn-sm btn-success m-1 float-right print-button" (click)="print()">
+            <i class="fa fa-print" aria-hidden="true"></i> Print
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+
+
+        <div class="row mb-3">
+          <div class="col">
+            <div class="card">
+              <div class="card-header bg-transparent clear-fix">
+                <h4 class="float-left">Visits This Month</h4>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" data-target="#vtm" aria-controls="vtm">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" id="vtm">
+                <div class="card-text chart-box">
+                  <canvas baseChart [datasets]="nationalInteractionChartData"
+                          [labels]="nationalInteractionChartLabels"
+                          [options]="nationalInteractionChartOptions"
+                          [colors]="nationalInteractionChartColors"
+                          [legend]="'true'"
+                          [chartType]="'bar'"></canvas>
+                </div>
+                <div class="mb-1">
+                  <span *ngIf="!nationalMapReadyTM">Map is loading...</span>
+                  <ngui-map #nationalMapTM [center]="nationalMapCenterTM" zoom="9" (idle)="nationalMapLoadedTM()"
+                            streetViewControl="false" mapTypeId="satellite">
+                    <custom-marker *ngFor="let mark of nationalPointsTM" [position]="mark.loc" [title]="mark.info">
+                      <div [class]="mark.class"></div>
+                    </custom-marker>
+                  </ngui-map>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <span><img src="../../../assets/red-dot.png"> Individual Farm Visits<!--: {{nationalIndivTM}}--></span>
+                  </div>
+                  <div class="col">
+                    <span><img src="../../../assets/blue-dot.png"> Group Farm Visits<!--: {{nationalGroupTM}}--></span>
+                  </div>
+                  <div class="col">
+                    <span><img
+                      src="../../../assets/yellow-dot.png"> Stakeholder Platforms<!--: {{nationalPlatformTM}}--></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <div class="card">
+              <div class="card-header bg-transparent clear-fix">
+                <h4 class="float-left">Visits Last Month</h4>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" data-target="#vlm" aria-controls="vlm">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" id="vlm">
+                <div class="card-text chart-box">
+                  <canvas baseChart [datasets]="nationalInteractionChartDataLM"
+                          [labels]="nationalInteractionChartLabelsLM"
+                          [options]="nationalInteractionChartOptions"
+                          [colors]="nationalInteractionChartColors"
+                          [legend]="'true'"
+                          [chartType]="'bar'"></canvas>
+                </div>
+                <div class="mb-1">
+                  <span *ngIf="!nationalMapReadyLM">Map is loading...</span>
+                  <ngui-map #nationalMapLM [center]="nationalMapCenterLM" zoom="9" (idle)="nationalMapLoadedLM()"
+                            streetViewControl="false" mapTypeId="satellite">
+                    <custom-marker *ngFor="let mark of nationalPointsLM" [position]="mark.loc" [title]="mark.info">
+                      <div [class]="mark.class"></div>
+                    </custom-marker>
+                  </ngui-map>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <span><img src="../../../assets/red-dot.png"> Individual Farm Visits<!--: {{nationalIndivLM}}--></span>
+                  </div>
+                  <div class="col">
+                    <span><img src="../../../assets/blue-dot.png"> Group Farm Visits<!--: {{nationalGroupLM}}--></span>
+                  </div>
+                  <div class="col">
+                    <span><img
+                      src="../../../assets/yellow-dot.png"> Stakeholder Platforms<!--: {{nationalPlatformLM}}--></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <div class="card">
+              <div class="card-header bg-transparent clear-fix">
+                <h4 class="float-left">Detailed Information</h4>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" data-target="#dit" aria-controls="dit">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" id="dit">
+                <div class="card-text">
+                  <table class="table table-responsive table-striped">
+                    <thead>
+                    <tr>
+                      <th>District</th>
+                      <th># Contacts</th>
+                      <th># Farmers</th>
+                      <th># Ext Workers</th>
+                      <th>Individual Visits</th>
+                      <th>Group Visits</th>
+                      <th>Platforms</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let d of districtsWithStats">
+                      <td class="text-center">{{d}}</td>
+                      <td class="text-center">{{contactsByDistrictChart[d] || 0}}</td>
+                      <td class="text-center">{{contactStats[d] && contactStats[d].farmers ? contactStats[d].farmers :
+                        0}}
+                      </td>
+                      <td class="text-center">{{extWorkerByDistrict[d]}}</td>
+                      <td>
+                        <ul class="list-group">
+                          <li class="list-group-item">
+                            This Month: {{districtIndivStats[d].thisMonth}}
+                            <i *ngIf="districtIndivStats[d].thisMonth < districtIndivStats[d].lastMonth"
+                               class="fa fa-arrow-down" aria-hidden="true"></i>
+                            <i *ngIf="districtIndivStats[d].thisMonth > districtIndivStats[d].lastMonth"
+                               class="fa fa-arrow-up" aria-hidden="true"></i>
+                          </li>
+                          <li class="list-group-item">Last Month: {{districtIndivStats[d].lastMonth}}</li>
+                          <li class="list-group-item">Lifetime: {{districtIndivStats[d].total}}</li>
+                        </ul>
+                      </td>
+                      <td>
+                        <ul class="list-group">
+                          <li class="list-group-item">
+                            This Month: {{districtGroupStats[d].thisMonth}}
+                            <i *ngIf="districtGroupStats[d].thisMonth < districtGroupStats[d].lastMonth"
+                               class="fa fa-arrow-down" aria-hidden="true"></i>
+                            <i *ngIf="districtGroupStats[d].thisMonth > districtGroupStats[d].lastMonth"
+                               class="fa fa-arrow-up" aria-hidden="true"></i>
+                          </li>
+                          <li class="list-group-item">Last Month: {{districtGroupStats[d].lastMonth}}</li>
+                          <li class="list-group-item">Lifetime: {{districtGroupStats[d].total}}</li>
+                        </ul>
+                      </td>
+                      <td>
+                        <ul class="list-group">
+                          <li class="list-group-item">
+                            This Month: {{districtPlatformStats[d].thisMonth}}
+                            <i *ngIf="districtPlatformStats[d].thisMonth < districtPlatformStats[d].lastMonth"
+                               class="fa fa-arrow-down" aria-hidden="true"></i>
+                            <i *ngIf="districtPlatformStats[d].thisMonth > districtPlatformStats[d].lastMonth"
+                               class="fa fa-arrow-up" aria-hidden="true"></i>
+                          </li>
+                          <li class="list-group-item">Last Month: {{districtPlatformStats[d].lastMonth}}</li>
+                          <li class="list-group-item">Lifetime: {{districtPlatformStats[d].total}}</li>
+                        </ul>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+
+            <div class="card">
+              <div class="card-header bg-transparent clear-fix">
+                <h4 class="float-left">Contacts By Type</h4>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" data-target="#cbt" aria-controls="cbt">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" id="cbt">
+                <div class="card-text chart-box">
+                  <canvas *ngIf="nationalChartAvailable" baseChart
+                          [data]="nationalContactChart"
+                          [labels]="nationContactChartLabels"
+                          [chartType]="nationalContactChartType"></canvas>
+                  <div class="row">
+                    <div class="col">
+                      <span>Farmer/Producer: {{nationalContactChart[0]}}</span>
+                      <span>Government: {{nationalContactChart[1]}}</span>
+                    </div>
+                    <div class="col">
+                      <span>Private&nbsp;Sector: {{nationalContactChart[2]}}</span>
+                      <span>Civil&nbsp;Society/NGO: {{nationalContactChart[3]}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="col">
+            <div class="card">
+              <div class="card-header bg-transparent clear-fix">
+                <h4 class="float-left">Contacts By District</h4>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" data-target="#cbd" aria-controls="cbd">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" id="cbd">
+                <div class="card-text">
+                  <canvas *ngIf="showContactsByDistrict" baseChart
+                          [data]="contactsByDistrictValues"
+                          [labels]="contactsByDistrictLabels"
+                          [chartType]="'pie'"></canvas>
+                  <div class="container">
+                    <div class="row">
+                      <div class="col" *ngFor="let row of contactsByDistrictValues; let i = index">
+                        <span>{{contactsByDistrictLabels[i] + ':&nbsp;' + row}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <div class="card">
+              <div class="card-header bg-transparent clear-fix">
+                <h4 class="float-left">Visits By Type (All Time)</h4>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" data-target="#ibtat" aria-controls="ibtat">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" id="ibtat">
+                <div class="card-text">
+                  <canvas *ngIf="nationalInteractionsByTypeReady" baseChart
+                          [data]="nationalInteractionsByTypeValues"
+                          [labels]="nationalInteractionsByTypeLabels"
+                          [chartType]="'doughnut'"></canvas>
+                  <div class="row">
+                    <div class="col">
+                      <span>Individual Farm Visits: {{nationalInteractionsByTypeValues[0]}}</span>
+                    </div>
+                    <div class="col">
+                      <span>Group Farm Visits: {{nationalInteractionsByTypeValues[1]}}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <span>Stakeholder Platforms: {{nationalInteractionsByTypeValues[2]}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="card">
+              <div class="card-header bg-transparent clear-fix">
+                <h4 class="float-left">Visits By District (All Time)</h4>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" data-target="#ibdat" aria-controls="ibdat">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" id="ibdat">
+                <div class="card-text">
+                  <canvas *ngIf="nationalInteractionsByDistrictReady" baseChart
+                          [data]="nationalInteractionsByDistrictValues"
+                          [labels]="nationalInteractionsByDistrictLabels"
+                          [chartType]="'pie'"></canvas>
+                  <div class="container">
+                    <div class="row">
+                      <div class="col" *ngFor="let row of nationalInteractionsByDistrictValues; let i = index">
+                        <span>{{nationalInteractionsByDistrictLabels[i] + ':&nbsp;' + row}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <div class="card">
+              <div class="card-header bg-transparent clear-fix">
+                <h4 class="float-left">Visits By Type (This Month)</h4>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" data-target="#ibttm" aria-controls="ibttm">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" id="ibttm">
+                <div class="card-text">
+                  <canvas baseChart *ngIf="nationalInteractionsThisMonthReady"
+                          [data]="nationalInteractionsByTypeTMValues"
+                          [labels]="nationalInteractionsByTypeLabels"
+                          [chartType]="'pie'"></canvas>
+                  <div class="row">
+                    <div class="col">
+                      <span>Individual Farm Visits: {{nationalInteractionsByTypeTMValues[0]}}</span>
+                    </div>
+                    <div class="col">
+                      <span>Group Farm Visits: {{nationalInteractionsByTypeTMValues[1]}}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <span>Stakeholder Platforms: {{nationalInteractionsByTypeTMValues[2]}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="card">
+              <div class="card-header bg-transparent clear-fix">
+                <h4 class="float-left">Visits By Type (Last Month)</h4>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" data-target="#ibtlm" aria-controls="ibtlm">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" id="ibtlm">
+                <div class="card-text">
+                  <canvas *ngIf="nationalInteractionsLastMonthReady" baseChart
+                          [data]="nationalInteractionsByTypeLMValues"
+                          [labels]="nationalInteractionsByTypeLabels"
+                          [chartType]="'pie'"></canvas>
+                  <div class="row">
+                    <div class="col">
+                      <span>Individual Farm Visits: {{nationalInteractionsByTypeLMValues[0]}}</span>
+                    </div>
+                    <div class="col">
+                      <span>Group Farm Visits: {{nationalInteractionsByTypeLMValues[1]}}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <span>Stakeholder Platforms: {{nationalInteractionsByTypeLMValues[2]}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    <!-- District Tab -->
+    <div class="card" *ngIf="userDistrict && userDistrict != ''">
+      <div class="card-header" role="tab" id="headingTwo">
+        <h5 class="mb-0"><i class="fa fa-map" aria-hidden="true"></i>&nbsp;
+          <a class="collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false"
+             aria-controls="collapseTwo">
+            District Overview
+          </a>
+        </h5>
+      </div>
+      <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo" data-parent="#accordion">
+        <div class="row">
+          <div class="col float-right">
+            <button class="btn btn-sm btn-success m-1 float-right print-button" [disabled]="!districtMapReady"
+                    (click)="print()">
+              <i class="fa fa-print" aria-hidden="true"></i> Print
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card mb-3" *ngIf="districtHasWorkers">
+            <div class="card-header bg-transparent clear-fix">
+              <h4 class="float-left">Extension Workers assigned to {{userDistrict}} District</h4>
+              <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                      aria-expanded="true" data-target="#ewt" aria-controls="ewt">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="card-body collapse show no-break" id="ewt">
+              <div class="card-text">
+                <table class="table table-responsive table-striped">
+                  <thead class="thead-light">
+                  <tr>
+                    <th>Extension Worker</th>
+                    <th>Manager</th>
+                    <th>Area</th>
+                    <th>Section</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let worker of districtExtensionWorkerList">
+                    <td><a [routerLink]="['/gps-location/' + worker.$key + '/' + worker.email]">
+                      {{worker.fullName || worker.email}}
+                    </a></td>
+                    <td>{{worker.manager.fullName || worker.manager.email}}</td>
+                    <td>{{worker.area}}</td>
+                    <td>{{worker.section}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+                <br/>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3 no-break" *ngIf="districtHasWorkers">
+            <div class="card-header bg-transparent clear-fix">
+              <h4 class="float-left">Monthly Progress Towards Goals</h4>
+              <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                      aria-expanded="true" data-target="#ptg" aria-controls="ptg">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="card-body collapse show" id="ptg">
+              <div class="card-text">
+                <div>
+                <span>
+                  Individual Farm Visits:<br/>
+                  {{buildProgressLabel(individualProgress, individualGoal)}} Complete ({{individualProgress + ' out of ' + individualGoal}})
+                </span>
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped" role="progressbar"
+                         [attr.aria-valuenow]="individualProgress"
+                         [style.width]="buildProgressLabel(individualProgress, individualGoal)"
+                         aria-valuemin="0" [attr.aria-valuemax]="individualGoal">
+                    </div>
+                  </div>
+                </div>
+                <div>
+                <span>
+                  Group Farm Visits:<br/>
+                  {{buildProgressLabel(groupProgress, groupGoal)}} Complete ({{groupProgress + ' out of ' + groupGoal}})
+                </span>
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped" role="progressbar"
+                         [attr.aria-valuenow]="groupProgress"
+                         [style.width]="buildProgressLabel(groupProgress, groupGoal)"
+                         aria-valuemin="0" [attr.aria-valuemax]="groupGoal">
+                    </div>
+                  </div>
+                </div>
+                <div>
+                <span>
+                  Stakeholder Platforms:<br/>
+                  {{buildProgressLabel(platformProgress, platformGoal)}} Complete ({{platformProgress + ' out of ' + platformGoal}})
+                </span>
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped" role="progressbar"
+                         [attr.aria-valuenow]="platformProgress"
+                         [style.width]="buildProgressLabel(platformProgress, platformGoal)"
+                         aria-valuemin="0" [attr.aria-valuemax]="platformGoal">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="card mb-3 no-break">
+            <div class="card-header bg-transparent clear-fix">
+              <h4 class="float-left">Visit Map</h4>
+              <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                      aria-expanded="true" data-target="#dvm" aria-controls="dvm">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="card-body collapse show" id="dvm">
+              <div class="mb-1">
+                <span *ngIf="!districtMapReady">Map is loading...</span>
+                <ngui-map #districtMap [center]="districtMapCenter" zoom="12" (idle)="districtMapLoaded($event)"
+                          streetViewControl="false" mapTypeId="satellite">
+                  <custom-marker *ngFor="let mark of districtPoints" [position]="mark.loc" [title]="mark.info">
+                    <div [class]="mark.class"></div>
+                  </custom-marker>
+                </ngui-map>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <span><img src="../../../assets/red-dot.png"> Individual Farm Visits: {{individualProgress}}</span>
+                </div>
+                <div class="col">
+                  <span><img src="../../../assets/blue-dot.png"> Group Farm Visits: {{groupProgress}}</span>
+                </div>
+                <div class="col">
+                  <span><img src="../../../assets/yellow-dot.png"> Stakeholder Platforms: {{platformProgress}}</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="card mb-3 no-break">
+            <div class="card-header bg-transparent clear-fix">
+              <h4 class="float-left">Visit Details</h4>
+              <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                      aria-expanded="true" data-target="#dvd" aria-controls="dvd">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="card-body collapse show" id="dvd">
+              <table class="table table-responsive table-striped table-bordered table-sm">
+                <thead class="thead-light">
+                <tr>
+                  <th>Visit Type</th>
+                  <th>Visit Date</th>
+                  <th>Farmer/Group</th>
+                  <th>District</th>
+                  <th>Extension Worker</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let visit of distIndiv">
+                  <td>Individual</td>
+                  <td>{{visit.visitInformation.visitDate | date:'dd MMM yyyy'}}</td>
+                  <td>
+                    <a
+                      [routerLink]="['/view-farmer/' + visit.farmerInformation.guid]">{{visit.farmerInformation.name}}</a>
+                  </td>
+                  <td>{{visit.farmerInformation.district || "Unknown District"}}</td>
+                  <td>
+                    <a [routerLink]="['/gps-location/' + visit.user.$key + '/' + visit.user.email]">
+                      {{visit.user.fullName || visit.user.email}}
+                    </a>
+                  </td>
+                </tr>
+                <tr *ngFor="let visit of distGroup">
+                  <td>Group</td>
+                  <td>{{visit.visitInformation.visitDate | date:'dd MMM yyyy'}}</td>
+                  <td>
+                    <a [routerLink]="['/group/' + visit.groupDetails.guid]">{{visit.groupDetails.groupName}}</a>
+                  </td>
+                  <td>{{visit.groupDetails.district}}</td>
+                  <td>
+                    <a [routerLink]="['/gps-location/' + visit.user.$key + '/' + visit.user.email]">
+                      {{visit.user.fullName || visit.user.email}}
+                    </a>
+                  </td>
+                </tr>
+                <tr *ngFor="let visit of distPlatform">
+                  <td>Stakeholder Platform</td>
+                  <td>{{visit.meetingDate | date:'dd MMM yyyy'}}</td>
+                  <td></td>
+                  <td>{{visit.district}}</td>
+                  <td>
+                    <a [routerLink]="['/gps-location/' + visit.user.$key + '/' + visit.user.email]">
+                      {{visit.user.fullName || visit.user.email}}
+                    </a>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <br/>
+            </div>
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+    </div>
+
+    <!-- Team Tab -->
+    <div class="card" *ngIf="hasSubordinates">
+      <div class="card-header" role="tab" id="headingThree">
+        <h5 class="mb-0"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;
+          <a class="collapsed" data-toggle="collapse" href="#collapseThree" aria-expanded="false"
+             aria-controls="collapseThree">
+            Your Team
+          </a>
+        </h5>
+      </div>
+      <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="#accordion">
+        <div class="row">
+          <div class="col float-right">
+            <button class="btn btn-sm btn-success m-1 float-right print-button" [disabled]="!teamMapReady"
+                    (click)="print()">
+              <i class="fa fa-print" aria-hidden="true"></i> Print
+            </button>
+          </div>
+        </div>
+        <div class=" row no-break" *ngFor="let s of subordinateList; let i = index">
+          <div class="col">
+            <div class="card m-3">
+              <div class="card-header bg-transparent clear-fix">
+                <strong class="float-left">{{s.fullName || s.email}}</strong>
+                <button type="button" class="close float-right" aria-label="Close" data-toggle="collapse"
+                        aria-expanded="true" [attr.data-target]="['#sub' + i]" [attr.aria-controls]="['sub' + i]">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="card-body collapse show" [id]="['sub' + i]">
+                <div>
+                  <a [routerLink]="['/gps-location/' + s.$key + '/' + s.email]">Extension Worker Details</a>
+                </div>
+                <div class="mb-1">
+                  <strong>Monthly Progress:</strong><br/>
+                  <div>
+                <span>
+                  Individual Farm Visits:<br/>
+                  {{buildProgressLabel(subordinateProgress[s.email].individualProgress, subordinateProgress[s.email].individualGoal)}} Complete ({{subordinateProgress[s.email].individualProgress + ' out of ' + subordinateProgress[s.email].individualGoal}})
+                </span>
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-striped" role="progressbar"
+                           [attr.aria-valuenow]="subordinateProgress[s.email].individualProgress"
+                           [style.width]="buildProgressLabel(subordinateProgress[s.email].individualProgress, subordinateProgress[s.email].individualGoal)"
+                           aria-valuemin="0" [attr.aria-valuemax]="subordinateProgress[s.email].individualGoal">
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                <span>
+                  Group Farm Visits:<br/>
+                  {{buildProgressLabel(subordinateProgress[s.email].groupProgress, subordinateProgress[s.email].groupGoal)}} Complete ({{subordinateProgress[s.email].groupProgress + ' out of ' + subordinateProgress[s.email].groupGoal}})
+                </span>
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-striped" role="progressbar"
+                           [attr.aria-valuenow]="subordinateProgress[s.email].groupProgress"
+                           [style.width]="buildProgressLabel(subordinateProgress[s.email].groupProgress, subordinateProgress[s.email].groupGoal)"
+                           aria-valuemin="0" [attr.aria-valuemax]="subordinateProgress[s.email].groupGoal">
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                <span>
+                  Stakeholder Platforms:<br/>
+                  {{buildProgressLabel(subordinateProgress[s.email].platformProgress, subordinateProgress[s.email].platformGoal)}} Complete ({{subordinateProgress[s.email].platformProgress + ' out of ' + subordinateProgress[s.email].platformGoal}})
+                </span>
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-striped" role="progressbar"
+                           [attr.aria-valuenow]="subordinateProgress[s.email].platformProgress"
+                           [style.width]="buildProgressLabel(subordinateProgress[s.email].platformProgress, subordinateProgress[s.email].platformGoal)"
+                           aria-valuemin="0" [attr.aria-valuemax]="subordinateProgress[s.email].platformGoal">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Display this month's individual visits for the extension worker -->
+                <div class="mb-1" *ngIf="individualVisits[s.email] && individualVisits[s.email].length > 0">
+                  <strong>Individual Farm Visit Details</strong>
+                  <table class="table table-responsive table-striped table-bordered">
+                    <thead>
+                    <tr>
+                      <th>Visit Date</th>
+                      <th>Farmer</th>
+                      <th>District</th>
+                      <th>Village</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let v of individualVisits[s.email]">
+                      <td>{{v.visitInformation.visitDate | date:'dd MMM yyyy'}}</td>
+                      <td><a
+                        [routerLink]="['/view-farmer/' + v.farmerInformation.guid]">{{v.farmerInformation.name}}</a>
+                      </td>
+                      <td>{{v.farmerInformation.district}}</td>
+                      <td>{{v.farmerInformation.villageName}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Display this month's group visits for the extension worker -->
+                <div class="mb-1" *ngIf="groupVisits[s.email] && groupVisits[s.email].length > 0">
+                  <strong>Group Farm Visit Details</strong>
+                  <table class="table table-responsive table-striped table-bordered">
+                    <thead>
+                    <tr>
+                      <th>Visit Date</th>
+                      <th>Group</th>
+                      <th>District</th>
+                      <th>Village</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let v of groupVisits[s.email]">
+                      <td>{{v.visitInformation.visitDate | date:'dd MMM yyyy'}}</td>
+                      <td><a [routerLink]="['/group/' + v.groupDetails.guid]">{{v.groupDetails.groupName}}</a></td>
+                      <td>{{v.groupDetails.district}}</td>
+                      <td>{{v.groupDetails.village}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Display this month's stakeholder platforms for the extension worker -->
+                <div class="mb-1" *ngIf="platforms[s.email] && platforms[s.email].length > 0">
+                  <strong>Stakeholder Platform Details</strong>
+                  <table class="table table-responsive table-striped table-bordered">
+                    <thead>
+                    <tr>
+                      <th>Platform Date</th>
+                      <th>Topic</th>
+                      <th>District</th>
+                      <th>Village</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let v of platforms[s.email]">
+                      <td>{{v.meetingDate | date:'dd MMM yyyy'}}</td>
+                      <td>{{v.topic}}</td>
+                      <td>{{v.district || ""}}</td>
+                      <td>{{v.village || ""}}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- Display this month's visits on a map -->
+                <div *ngIf="hasMonthyData[s.email]">
+                  <div class="mb-1 no-break">
+                    <span *ngIf="!teamMapReady">Map is loading...</span>
+                    <ngui-map #subMap [center]="subordinateMapCenter[s.email]" zoom="12" streetViewControl="false"
+                              (idle)="teamMapLoaded($event)" mapTypeId="satellite">
+                      <custom-marker *ngFor="let mark of subordinateMapMarkers[s.email]" [position]="mark.loc"
+                                     [title]="mark.info">
+                        <div [class]="mark.class"></div>
+                      </custom-marker>
+                    </ngui-map>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <span><img src="../../../assets/red-dot.png"> Individual Farm Visits: {{getIndividualCountMonth(s.email)}}</span>
+                    </div>
+                    <div class="col">
+                  <span><img
+                    src="../../../assets/blue-dot.png"> Group Farm Visits: {{getGroupCountMonth(s.email)}}</span>
+                    </div>
+                    <div class="col">
+                      <span><img src="../../../assets/yellow-dot.png"> Stakeholder Platforms: {{getPlatformCountMonth(s.email)}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+          <!--<div class="col">
+
+            <div class="card border-primary mb-3 ml-3">
+              <div class="card-header bg-transparent border-primary">
+                <a [routerLink]="['/gps-location/' + s.$key + '/' + s.email]">{{s.fullName}}</a>
+                <span>Lifetime Visits</span>
+              </div>
+              <div *ngIf="!hasLifetimeData[s.email]" class="card-body bg-danger text-white">
+                This extension worker has no lifetime visits to display!
+              </div>
+              <div *ngIf="hasLifetimeData[s.email]" class="card-body">
+                <div class="chart-box">
+                  <canvas baseChart
+                          [data]="getPieChart(s.email)"
+                          [labels]="pieChartLabels"
+                          [chartType]="pieChartType"
+                          [colors]="chartColors"></canvas>
+                </div>
+                <div class="row ml-3">
+                  <span>Individual Farm Visits: {{getIndividualVisitCount(s.email)}}</span>
+                </div>
+                <div class="row ml-3">
+                  <span>Group Farm Visits: {{getGroupVisitCount(s.email)}}</span>
+                </div>
+                <div class="row ml-3">
+                  <span>Stakeholder Platforms: {{getPlatformCount(s.email)}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card border-primary mb-3 mr-3">
+              <div class="card-header bg-transparent border-primary">
+                <a [routerLink]="['/gps-location/' + s.$key + '/' + s.email]">{{s.email}}</a>
+                <span>This Month's Visits</span>
+              </div>
+              <div *ngIf="!hasMonthyData[s.email]" class="card-body">
+                This extension worker doesn't have any visits this month.<br/>
+                Please visit their <a [routerLink]="['/gps-location/' + s.$key + '/' + s.email]">
+                details page</a> to set a monthly goal.
+              </div>
+              <div *ngIf="hasMonthyData[s.email]" class="card-body">
+                <div class="chart-box">
+                  <canvas baseChart
+                          [data]="getMonthlyPie(s.email)"
+                          [labels]="pieChartLabels"
+                          [chartType]="pieChartType"
+                          [colors]="chartColors"></canvas>
+                </div>
+                <div class="row ml-3">
+                  <span>Individual Farm Visits: {{getIndividualCountMonth(s.email)}}</span>
+                </div>
+                <div class="row ml-3">
+                  <span>Group Farm Visits: {{getGroupCountMonth(s.email)}}</span>
+                </div>
+                <div class="row ml-3">
+                  <span>Stakeholder Platforms: {{getPlatformCountMonth(s.email)}}</span>
+                </div>
+              </div>
+            </div>
+          </div>-->
+        </div>
+      </div>
+    </div>
+  </div>

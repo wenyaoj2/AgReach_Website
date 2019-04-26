@@ -1,0 +1,17 @@
+<div>
+  <label for="districtSelect" class="info">Select a district</label>
+  <br/>
+  <select [disabled]="disabled" id="districtSelect" class="form-control-sm" [(ngModel)]="selectedDistrict"
+          (change)="districtAreaSelect($event)">
+    <option value=""></option>
+    <option *ngFor="let dist of districtList" [ngValue]="dist">{{dist.name}}</option>
+  </select>
+  <br/>
+  <label #selectAreaLabel for="areaSelect" class="info hidden">Now select the EPA</label>
+  <br/>
+  <select [disabled]="disabled" #areaSelect id="areaSelect" class="form-control-sm hidden" [(ngModel)]="selectedArea"
+          (change)="selectArea()">
+    <option value=""></option>
+    <option *ngFor="let a of areaList">{{a}}</option>
+  </select>
+</div>

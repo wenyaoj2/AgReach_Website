@@ -1,0 +1,460 @@
+<h4 class="page-header">Extension Worker Information: {{fullName}} ({{email}})</h4>
+
+<div class="row mb-1">
+  <div class="col float-left">
+    <button *ngIf="!expanded" class="btn btn-sm btn-success" (click)="expandAll()">Expand All</button>
+    <button *ngIf="expanded" class="btn btn-sm btn-success" (click)="collapseAll()">Collapse All</button>
+  </div>
+  <div class="col float-right">
+    <button class="btn btn-sm btn-success m-1 float-right print-button" (click)="print()">
+      <i class="fa fa-print" aria-hidden="true"></i> Print
+    </button>
+  </div>
+</div>
+
+
+<div id="accordion" role="tablist">
+
+  <div class="card no-break">
+    <div class="card-header" role="tab" id="headingOne">
+      <h5 class="mb-0"><i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp;
+        <a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Extension Worker Stats
+        </a>
+      </h5>
+    </div>
+
+    <div #collapseOne id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne"
+         data-parent="#accordion">
+      <div class="card-body">
+        <div class="alert alert-info" role="alert">
+          <h4>Extension Worker Stats</h4>
+          <ul>
+            <li>This extension worker has completed {{individualVisitCount}}
+              <a data-toggle="collapse" href="#collapseThree">individual farm visit(s)</a>, {{individualCountMonth}}
+              of which occurred this month.
+            </li>
+            <li>This extension worker has completed {{groupVisitCount}} <a data-toggle="collapse" href="#collapseFour">group
+              farm visit(s)</a>, {{groupCountMonth}}
+              of which occurred this month.
+            </li>
+            <li>This extension worker has participated in {{platformCount}}
+              <a data-toggle="collapse" href="#collapseFive">stakeholder platform(s)</a>, {{platformCountMonth}}
+              of which occurred this month.
+            </li>
+          </ul>
+          <br/>
+          <h4>{{xAxisLabel}}</h4>
+          <div class="chart container">
+            <ngx-charts-line-chart
+              [view]="view"
+              [scheme]="colorScheme"
+              [results]="activityChart"
+              [gradient]="gradient"
+              [xAxis]="showXAxis"
+              [yAxis]="showYAxis"
+              [legend]="showLegend"
+              [showXAxisLabel]="showXAxisLabel"
+              [showYAxisLabel]="showYAxisLabel"
+              [xAxisLabel]="xAxisLabel"
+              [yAxisLabel]="yAxisLabel"
+              [autoScale]="autoScale">
+            </ngx-charts-line-chart>
+          </div>
+          <br/>
+          <h4>Progress Towards Monthly Goals</h4>
+          <div>
+            <span>
+              Individual Farm Visits: {{(individualCountMonth/individualVisitGoal * 100).toFixed(2)}}% Complete ({{individualCountMonth + ' out of ' + individualVisitGoal}})
+            </span>
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped" role="progressbar"
+                   [attr.aria-valuenow]="individualCountMonth"
+                   [style.width]="(individualCountMonth/individualVisitGoal * 100).toFixed(2) + '%'"
+                   aria-valuemin="0" [attr.aria-valuemax]="individualVisitGoal">
+              </div>
+            </div>
+            <br/>
+            <span>
+              Group Farm Visits: {{(groupCountMonth/groupVisitGoal * 100).toFixed(2)}}% Complete ({{groupCountMonth + ' out of ' + groupVisitGoal}})
+            </span>
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped" role="progressbar"
+                   [attr.aria-valuenow]="groupCountMonth"
+                   [style.width]="(groupCountMonth/groupVisitGoal * 100).toFixed(2) + '%'"
+                   aria-valuemin="0" [attr.aria-valuemax]="groupVisitGoal">
+              </div>
+            </div>
+            <br/>
+            <span>
+              Stakeholder Platforms: {{(platformCountMonth/platformGoal * 100).toFixed(2)}}% Complete ({{platformCountMonth + ' out of ' + platformGoal}})
+            </span>
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped" role="progressbar"
+                   [attr.aria-valuenow]="platformCountMonth"
+                   [style.width]="(platformCountMonth/platformGoal * 100).toFixed(2) + '%'"
+                   aria-valuemin="0" [attr.aria-valuemax]="platformGoal">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card no-break">
+    <div class="card-header" role="tab" id="headingTwo">
+      <h5 class="mb-0"><i class="fa fa-map-marker" aria-hidden="true"></i>&nbsp;
+        <a class="collapsed" data-toggle="collapse" (click)="locationTrackingMapResize()" href="#collapseTwo"
+           aria-expanded="false" aria-controls="collapseTwo">
+          Extension Worker Location Tracker
+        </a>
+      </h5>
+    </div>
+
+    <div #collapseTwo id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo"
+         data-parent="#accordion">
+      <div class="card-body">
+        <div>
+          <h4>Extension Worker's Location</h4>
+          <p>
+            <span *ngIf="!locationMapLoaded">Map is loading.  This may take a moment...</span>
+            <ngui-map #locationTrackingMap zoom="13" mapTypeId="satellite" [center]="heatmapCenter"
+                      (idle)="locationMapLoadedEvent()">
+              <heatmap-layer [data]="heatmapData"></heatmap-layer>
+            </ngui-map>
+          </p>
+          <p>
+            <span>Currently displaying {{filteredLocationCount}} out of {{locationTrackingCount}} location results for this extension worker.</span>
+          </p>
+          <div class="input-group">
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                      aria-haspopup="true" aria-expanded="false">
+                Filter Location Results: {{locationFilterString}}
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" (click)="filterHeatmap('Today')">Today</a>
+                <a class="dropdown-item" (click)="filterHeatmap('This Week')">This Week</a>
+                <a class="dropdown-item" (click)="filterHeatmap('Last Week')">Last Week</a>
+                <a class="dropdown-item" (click)="filterHeatmap('This Month')">This Month</a>
+                <a class="dropdown-item" (click)="filterHeatmap('Last Month')">Last Month</a>
+                <a class="dropdown-item" (click)="filterHeatmap('This Year')">This Year</a>
+                <!--<a class="dropdown-item" href="#">Custom Day/Range</a>-->
+                <div role="separator" class="dropdown-divider"></div>
+                <a class="dropdown-item" (click)="filterHeatmap('All')">Show All</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card no-break">
+    <div class="card-header" role="tab" id="headingThree">
+      <h5 class="mb-0"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;
+        <a class="collapsed" data-toggle="collapse" (click)="individualFarmMapResize()" href="#collapseThree"
+           aria-expanded="false" aria-controls="collapseThree">
+          Individual Farm Visits
+        </a>
+      </h5>
+    </div>
+
+    <div #collapseThree id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree"
+         data-parent="#accordion">
+      <div class="card-body">
+        <div>
+          <h4>Individual Farm Visits</h4>
+          <div *ngIf="hasIndividualVisits">
+            <span *ngIf="!individualMapLoaded">Map is loading...</span>
+            <ngui-map #individualFarmVisitMap [center]="individualMapCenter" zoom="12"
+                      streetViewControl="false" (idle)="individualMapLoadedEvent()">
+              <marker *ngFor="let mark of individualVisitList" [position]="mark.loc" [title]="mark.info">
+              </marker>
+            </ngui-map>
+            <br/>
+            <table class="table table-striped table-bordered">
+              <thead>
+              <tr>
+                <th>Visit Date</th>
+                <th>Duration (mins)</th>
+                <th>Farmer</th>
+                <th>Visit Focus</th>
+                <th>Farmer's Questions</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let v of individualFarmVisits">
+                <td>{{v.visitInformation.visitDate| date:'dd MMM yyyy h:mm a'}}</td>
+                <td>{{v.visitInformation.visitDuration}}</td>
+                <td><a [routerLink]="['/view-farmer/' + v.farmerInformation.guid]">{{v.farmerInformation.name}}</a></td>
+                <td>
+                  <ul>
+                    <li *ngFor="let t of v.visitInformation.visitFocus">{{t}}</li>
+                  </ul>
+                </td>
+                <td>
+                  <span *ngIf="!v.farmerQuestions">None</span>
+                  <ul *ngIf="v.farmerQuestions">
+                    <li *ngFor="let q of v.farmerQuestions">
+                      Category: {{q.category}}<br/>
+                      Question: {{q.description}}<br/>
+                      Response: {{q.response}}
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div *ngIf="!hasIndividualVisits">This extension worker has no individual farm visits to display.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card no-break">
+    <div class="card-header" role="tab" id="headingFour">
+      <h5 class="mb-0"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;
+        <a class="collapsed" data-toggle="collapse" (click)="groupFarmMapResize()" href="#collapseFour"
+           aria-expanded="false" aria-controls="collapseFour">Group Farm Visits
+        </a>
+      </h5>
+    </div>
+
+    <div #collapseFour id="collapseFour" class="collapse" role="tabpanel" aria-labelledby="headingFour"
+         data-parent="#accordion">
+      <div class="card-body">
+        <div>
+          <h4>Group Farm Visits</h4>
+          <div>
+            <div *ngIf="hasGroupVisits">
+              <span *ngIf="!groupMapLoaded">Map is loading...</span>
+              <ngui-map #groupFarmVisitMap [center]="groupMapCenter" zoom="15"
+                        streetViewControl="false" (idle)="groupMapLoadedEvent()">
+                <marker *ngFor="let mark of groupVisitList" [position]="mark.location" [title]="mark.info"></marker>
+              </ngui-map>
+
+              <br/>
+              <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                  <th>Visit Date</th>
+                  <th>Duration (mins)</th>
+                  <th>Visit Focus</th>
+                  <th>Group</th>
+                  <th>Attendees</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let g of groupFarmVisits">
+                  <td>{{g.visitInformation.visitDate | date:'dd MMM yyyy h:mm a'}}</td>
+                  <td>{{g.visitInformation.visitDuration}}</td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let f of g.visitInformation.visitFocus">{{f}}</li>
+                    </ul>
+                  </td>
+                  <td>{{g.groupDetails.groupName}}</td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let a of g.attendees">{{a.role + ': ' + a.name}}</li>
+                    </ul>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <span *ngIf="!hasGroupVisits">This extension worker has no group farm visits to display.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card no-break">
+    <div class="card-header" role="tab" id="headingFive">
+      <h5 class="mb-0"><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp;
+        <a class="collapsed" data-toggle="collapse" (click)="platformMapResize()" href="#collapseFive"
+           aria-expanded="false" aria-controls="collapseFive">Stakeholder Platforms
+        </a>
+      </h5>
+    </div>
+
+    <div #collapseFive id="collapseFive" class="collapse" role="tabpanel" aria-labelledby="headingFive"
+         data-parent="#accordion">
+      <div class="card-body">
+        <div>
+          <h4>Stakeholder Platforms</h4>
+          <br/>
+          <div *ngIf="platformCount < 1">This extension worker hasn't participated in any stakeholder platforms</div>
+          <div *ngIf="platformCount > 0">
+            <span *ngIf="!platformMapLoaded">Map is loading...</span>
+            <ngui-map #platformMap [center]="platformMapCenter" zoom="15"
+                      streetViewControl="false" (idle)="platformMapLoadedEvent()">
+              <marker *ngFor="let mark of platformPoints" [position]="mark.location" [title]="mark.title"></marker>
+            </ngui-map>
+            <table class="table table-striped table-bordered">
+              <thead>
+              <th>Platform Date</th>
+              <th>Duration (hours)</th>
+              <th>Topic</th>
+              <th>Attendees</th>
+              <th>SOP Checklist</th>
+              <th>Attachments</th>
+              </thead>
+              <tbody>
+              <tr *ngFor="let p of platformList">
+                <td>{{p.meetingDate | date:'dd MMM yyyy h:mm a'}}</td>
+                <td>{{p.duration}}</td>
+                <td>{{p.topic}}</td>
+                <td>
+                  <ul>
+                    <li *ngFor="let a of p.attendeeRoles">
+                      {{a.role + ': ' + a.name}}
+                    </li>
+                  </ul>
+                </td>
+                <td>
+                  <button *ngIf="p.sopChecklist" class="btn btn-primary" type="button" data-toggle="modal"
+                          [attr.data-target]="'#' + getId(p)">View SOP
+                  </button>
+                  <!--<span *ngIf="!p.sopChecklist">SOP Checklist was not completed.</span>-->
+                </td>
+                <td>
+                  <a *ngIf="p.minutesUrl" [href]="p.minutesUrl" target="_blank">Minutes</a><br/>
+                  <a *ngIf="p.attendeeList" [href]="p.attendeeList" target="_blank">Attendees</a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <div *ngFor="let p of platformList" class="modal fade" [id]="getId(p)" tabindex="-1"
+                 role="dialog" aria-hidden="true">
+              <div *ngIf="p.sopChecklist" class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">SOP Checklist</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row">
+                      <div class="col">
+                        <div class="row" *ngFor="let cats of p.sopChecklist">
+                          <div class="col">
+                            <div *ngIf="cats.category">
+                              <h3>SOP Category: {{cats.category}}</h3>
+                            </div>
+                            <div *ngIf="cats.subcategory">
+                              <h5>Subcategory: {{cats.subcategory}}</h5>
+                              <table class="table table-striped table-bordered">
+                                <thead>
+                                <th>Responsible Person</th>
+                                <th>Task</th>
+                                <th>Complete</th>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let task of cats.tasks">
+                                  <td>{{task.person}}</td>
+                                  <td>{{task.task}}</td>
+                                  <td>
+                                    <i *ngIf="task.complete" class="fa fa-check" aria-hidden="true"></i>
+                                    <i *ngIf="!task.complete" class="fa fa-times" aria-hidden="true"></i>
+                                    {{task.complete ? 'Yes' : 'No'}}
+                                  </td>
+                                </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card no-break">
+    <div class="card-header" role="tab" id="headingSix">
+      <h5 class="mb-0"><i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;
+        <a class="collapsed" data-toggle="collapse" href="#collapseSix"
+           aria-expanded="false" aria-controls="collapseSix">
+          Manage Extension Worker
+        </a>
+      </h5>
+    </div>
+
+    <div #collapseSix id="collapseSix" class="collapse" role="tabpanel" aria-labelledby="headingSix"
+         data-parent="#accordion">
+      <div class="card-body">
+        <div>
+          <h4>Manage Extension Worker</h4>
+          <br/>
+          <div *ngIf="!canManageWorker">
+            You do not have permission to manage this extension worker.
+          </div>
+          <div *ngIf="canManageWorker">
+            <h4>Monthly Goals</h4>
+            <div class="form">
+              <div class="row">
+                <div class="col">
+                  <label for="individualVisitGoalInput">Individual Farm Visit Goal</label>
+                  <input id="individualVisitGoalInput" type="number" class="form-control"
+                         [(ngModel)]="individualVisitGoal" (change)="updateIndividualGoal()">
+                </div>
+
+                <div class="col">
+                  <label for="groupVisitGoalInput">Group Farm Visit Goal</label>
+                  <input id="groupVisitGoalInput" type="number" class="form-control"
+                         [(ngModel)]="groupVisitGoal" (change)="updateGroupGoal()">
+                </div>
+
+                <div class="col">
+                  <label for="platformGoalInput">Stakeholder Platform Goal</label>
+                  <input id="platformGoalInput" type="number" class="form-control"
+                         [(ngModel)]="platformGoal" (change)="updatePlatformGoal()">
+                </div>
+
+              </div>
+            </div>
+            <br/>
+            <div>
+              <h4>Extension Worker Details</h4>
+              <div class="form">
+                <div class="row">
+                  <div class="col">
+                    <label>Name</label>
+                    <input class="form-control" [(ngModel)]="fullName" (change)="updateName()">
+                  </div>
+                  <div class="col">
+                    <label>Assigned Area</label>
+                    <app-area-picker [previousDistrict]="district" [previousArea]="area"
+                                     (update)="updateAssignedArea($event)"></app-area-picker>
+                  </div>
+                  <div class="col">
+                    <label>Manager</label>
+                    <select class="form-control" [(ngModel)]="currentManager" (change)="updateManager()">
+                      <option *ngFor="let m of managerList" [value]="m.email">{{m.email}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
